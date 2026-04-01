@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BelvynLabs — Scale Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+:root {
+  --black:#0C0810; --dark:#130F1A; --gold:#C8922A; --gold-bright:#E8A830;
+  --gold-dim:rgba(160,80,200,0.15); --white:#F8F4EC; --grey:#7A6A8A; --dim:#2A1F35;
+}
+body { background:var(--black); color:var(--white); font-family:'Barlow Condensed',sans-serif; overflow-x:hidden; }
+body::after {
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(1px 1px at 20% 30%,rgba(180,120,255,0.12) 0%,transparent 100%),
+  radial-gradient(1px 1px at 70% 15%,rgba(180,120,255,0.08) 0%,transparent 100%),
+  radial-gradient(ellipse at 100% 0%,rgba(100,40,160,0.15) 0%,transparent 50%),
+  radial-gradient(ellipse at 0% 100%,rgba(80,20,140,0.12) 0%,transparent 50%);
+  pointer-events:none; z-index:0;
+}
+.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:100px 20px 80px; position:relative; z-index:1; }
+.hero::before { content:''; position:absolute; top:30%; left:50%; transform:translate(-50%,-50%); width:900px; height:600px; background:radial-gradient(ellipse,rgba(120,60,180,0.18) 0%,transparent 65%); pointer-events:none; }
+.pre-tag { display:inline-flex; align-items:center; gap:10px; background:rgba(120,60,180,0.12); border:1px solid rgba(160,80,200,0.4); border-radius:2px; padding:8px 18px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:32px; opacity:0; animation:rise 0.6s ease forwards 0.1s; }
+.pre-tag::before { content:''; width:6px; height:6px; background:#9B50E0; border-radius:50%; animation:pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)} }
+.hero-h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(72px,14vw,172px); line-height:0.88; letter-spacing:3px; margin-bottom:32px; opacity:0; animation:rise 0.7s ease forwards 0.25s; }
+.hero-h1 .line1 { display:block; color:var(--white); }
+.hero-h1 .line2 { display:block; color:transparent; -webkit-text-stroke:2.5px var(--gold); }
+.hero-h1 .line3 { display:block; color:var(--gold); }
+.hero-sub { font-size:clamp(20px,2.8vw,28px); font-weight:400; color:rgba(248,244,236,0.55); max-width:640px; line-height:1.5; margin-bottom:52px; opacity:0; animation:rise 0.7s ease forwards 0.4s; }
+.hero-sub strong { color:var(--white); font-weight:700; }
+.hero-sub em { font-style:italic; color:var(--gold); }
+.hero-cta-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; opacity:0; animation:rise 0.7s ease forwards 0.55s; }
+.btn-primary { display:inline-block; background:linear-gradient(135deg,#9B50E0,#C8922A); color:#fff; font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:2.5px; padding:22px 72px; border-radius:3px; text-decoration:none; transition:all 0.2s; box-shadow:0 0 60px rgba(120,60,180,0.35); }
+.btn-primary:hover { background:linear-gradient(135deg,#B060F5,#E8A830); transform:translateY(-3px); box-shadow:0 16px 60px rgba(120,60,180,0.6); }
+.btn-note { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--grey); text-transform:uppercase; }
+.scroll-cue { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; opacity:0; animation:rise 0.7s ease forwards 1s; }
+.scroll-line { width:1px; height:48px; background:linear-gradient(to bottom,var(--gold),transparent); animation:scrollAnim 1.8s ease infinite; }
+@keyframes scrollAnim { 0%,100%{transform:scaleY(1);opacity:0.5}50%{transform:scaleY(0.5);opacity:1} }
+.proof-strip { border-top:1px solid var(--dim); border-bottom:1px solid var(--dim); padding:20px 24px; display:flex; justify-content:center; gap:60px; flex-wrap:wrap; position:relative; z-index:1; }
+.proof-item { display:flex; align-items:center; gap:10px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--grey); }
+.proof-item strong { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--gold); letter-spacing:1px; }
+.section { max-width:960px; margin:0 auto; padding:100px 24px; position:relative; z-index:1; }
+.section-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#B070F0; margin-bottom:16px; }
+.section-h { font-family:'Bebas Neue',sans-serif; font-size:clamp(48px,7vw,88px); line-height:0.92; letter-spacing:1px; margin-bottom:24px; }
+.section-body { font-size:20px; font-weight:400; color:rgba(248,244,236,0.6); max-width:640px; line-height:1.65; margin-bottom:56px; }
+.section-body strong { color:var(--white); font-weight:700; }
+.three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+.col-card { background:var(--dark); border:1px solid var(--dim); padding:36px 28px 32px; transition:border-color 0.25s; position:relative; overflow:hidden; }
+.col-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--gold),#9B50E0); transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+.col-card:hover { border-color:rgba(160,80,200,0.5); }
+.col-card:hover::before { transform:scaleX(1); }
+.col-num { font-family:'Bebas Neue',sans-serif; font-size:56px; color:rgba(160,80,200,0.25); line-height:1; margin-bottom:16px; border-bottom:1px solid var(--dim); padding-bottom:16px; }
+.col-title { font-size:22px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--white); margin-bottom:12px; line-height:1.1; }
+.col-desc { font-size:16px; font-weight:400; color:var(--grey); line-height:1.65; }
+.rule { width:100%; max-width:960px; margin:0 auto; height:1px; background:linear-gradient(to right,transparent,rgba(160,80,200,0.3),transparent); position:relative; z-index:1; }
+.book-section { max-width:960px; margin:0 auto; padding:80px 24px 60px; position:relative; z-index:1; }
+.book-inner { background:var(--dark); border:1px solid rgba(160,80,200,0.25); border-left:3px solid #9B50E0; padding:52px 56px; position:relative; overflow:hidden; }
+.book-inner::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at top left,rgba(120,60,180,0.10) 0%,transparent 60%); pointer-events:none; }
+.book-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#B070F0; margin-bottom:16px; }
+.book-h { font-family:'Bebas Neue',sans-serif; font-size:clamp(40px,5vw,64px); letter-spacing:1px; line-height:1; margin-bottom:20px; }
+.book-p { font-size:18px; font-weight:400; color:rgba(248,244,236,0.6); line-height:1.75; max-width:620px; }
+.book-p strong { color:var(--white); }
+.final-cta { text-align:center; padding:80px 24px 120px; position:relative; z-index:1; }
+.final-cta::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:400px; background:radial-gradient(ellipse,rgba(120,60,180,0.14) 0%,transparent 70%); pointer-events:none; }
+.final-h { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,8vw,108px); line-height:0.9; letter-spacing:2px; margin-bottom:24px; }
+.final-h .gold { color:var(--gold); }
+.final-sub { font-size:18px; color:rgba(248,244,236,0.5); margin-bottom:44px; font-weight:400; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.6; }
+footer { border-top:1px solid var(--dim); padding:24px; text-align:center; font-family:'DM Mono',monospace; font-size:11px; color:var(--grey); letter-spacing:1.5px; position:relative; z-index:1; }
+footer span { color:var(--gold); }
+@keyframes rise { from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)} }
+@media(max-width:720px){
+  .three-col{grid-template-columns:1fr}
+  .proof-strip{gap:30px}
+  .book-inner{padding:36px 28px}
+  .hero-h1 .line2{-webkit-text-stroke:1.5px var(--gold)}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="pre-tag">Read this if your AI creative still isn't converting.</div>
+  <h1 class="hero-h1">
+    <span class="line1">Better Creatives.</span>
+    <span class="line2">Faster Testing.</span>
+    <span class="line3">Real Results.</span>
+  </h1>
+  <p class="hero-sub">
+    You're already using AI. The problem is your creatives <em>look</em> like AI.<br>
+    We build high-fidelity AI-UGC that actually converts —<br>
+    <strong>20 variants in the time your agency takes to deliver one.</strong>
+  </p>
+  <div class="hero-cta-wrap">
+    <a class="btn-primary" href="https://calendly.com/nehansara723/belvyn-labs-creative-strategy-call" target="_blank">Show Me What Real Volume Looks Like</a>
+    <span class="btn-note">30 min · Free · No commitment</span>
+  </div>
+  <div class="scroll-cue"><div class="scroll-line"></div></div>
+</section>
+
+<div class="proof-strip">
+  <div class="proof-item"><strong>20×</strong> More variants per hook</div>
+  <div class="proof-item"><strong>Lower</strong> CAC than traditional shoots</div>
+  <div class="proof-item"><strong>72hr</strong> First batch delivered</div>
+  <div class="proof-item"><strong>Real</strong> A/B data every week</div>
+</div>
+
+<section class="section">
+  <div class="section-tag">Why most AI creative fails</div>
+  <h2 class="section-h">Volume Without<br>Quality Is<br>Just Noise.</h2>
+  <p class="section-body">You read the brand report. You saw the gap. The issue isn't that you don't have AI — it's that your AI creative doesn't match the quality of your brand. <strong>We fix both. Volume and fidelity. At the same time.</strong></p>
+  <div class="three-col">
+    <div class="col-card">
+      <div class="col-num">01</div>
+      <div class="col-title">Fidelity That Matches Your Brand</div>
+      <div class="col-desc">Not generic AI faces reading a script. High-fidelity expert avatars built specifically to match your audience's trust signals — demographic, tone, delivery, authority.</div>
+    </div>
+    <div class="col-card">
+      <div class="col-num">02</div>
+      <div class="col-title">One Hook. Twenty Variants.</div>
+      <div class="col-desc">We take your winning angle and generate it across multiple demographics, formats, and opening lines simultaneously. Real A/B testing at a scale your current setup can't match.</div>
+    </div>
+    <div class="col-card">
+      <div class="col-num">03</div>
+      <div class="col-title">Fresh Creative Every Week</div>
+      <div class="col-desc">Creative fatigue is a CAC killer. We deliver new batches weekly — the engine runs continuously so your ad account never runs dry and your CPA never spikes from stale assets.</div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<div class="book-section">
+  <div class="book-inner">
+    <div class="book-tag">Before you book</div>
+    <h3 class="book-h">Four Quick Questions.<br>That's All.</h3>
+    <p class="book-p">You'll answer four short questions — your current ad spend, your biggest creative bottleneck, how aggressively you want to scale, and who else needs to be in the room. <strong>The more honest you are, the more useful the 30 minutes will be.</strong> No prep needed. We've already done the homework on your brand.</p>
+  </div>
+</div>
+
+<section class="final-cta">
+  <h2 class="final-h">Ready To<br><span class="gold">Actually Scale?</span></h2>
+  <p class="final-sub">Your competitors are testing 20 creatives a week. You're testing three. That gap compounds every day.</p>
+  <a class="btn-primary" href="https://calendly.com/nehansara723/belvyn-labs-creative-strategy-call" target="_blank">Show Me What Real Volume Looks Like</a>
+</section>
+
+<footer><span>BelvynLabs</span> &nbsp;·&nbsp; AI-Powered Creative for DTC Brands &nbsp;·&nbsp; Confidential</footer>
+
+</body>
+</html>
